@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>Objectivity Bespoke Software Specialists</authors>
+    <licenseUrl>https://github.com/ObjectivityLtd/Cake.Deploy.Bot.LUIS/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/ObjectivityLtd/Cake.Deploy.Bot.LUIS</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Cake addin for deploying LUIS app</description>
+    <copyright>Objectivity Bespoke Software Specialists, MIT license</copyright>
+    <tags>Cake LUIS</tags>
+  </metadata>
+</package>
