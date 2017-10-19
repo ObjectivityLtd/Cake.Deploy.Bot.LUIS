@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="CakeLuisExtension.cs" />
     <Compile Include="LuisManager.cs" />
+    <Compile Include="LuisUrlHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

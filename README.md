@@ -38,7 +38,7 @@ UseInProcessClient=true
 #addin nuget:?package=Cake.Deploy.Bot.LUIS&loaddependencies=true
 ```
 ## How to use Cake.Deploy.Bot.LUIS
-
+By default, addin will use API for eu.luis.ai, if luis.ai is preferred, pass an additional "region" parameter with value "westus".
 
 ```cake
 #addin nuget:?package=Cake.Deploy.Bot.LUIS&version=0.0.1
@@ -49,9 +49,9 @@ Task("Publish LUIS app")
         var subscriptionKey = "123-abc-321";
         var appName = "exampleApp";
         var appVersion = "0.1";
-        var region = "westus";
         var pathToJsonApp = "examplePath\\app.json"
+        var region = "westus";
 
-        var endpoint = DeployLuisApp(subscriptionKey, appName, appVersion, region, pathToJsonApp);
+        var endpoint = DeployLuisApp(subscriptionKey, appName, appVersion,  pathToJsonApp, region);
     });
 ```

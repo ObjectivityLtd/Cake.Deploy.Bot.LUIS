@@ -13,15 +13,21 @@ namespace Cake.Deploy.Bot.LUIS
     {
         private readonly HttpClient _httpClient;
 
-        public LuisManager(string subscriptionKey)
+        private readonly string _baseUrl;
+
+        private readonly string _region;
+
+        public LuisManager(string subscriptionKey, string region)
         {
             _httpClient = new HttpClient();
             _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", subscriptionKey);
+            _baseUrl = LuisUrlHelper.GetApiUrl(region);
+            _region = region;
         }
 
         public async Task<string> ImportAppAsync(JObject model, string appName, CancellationToken ct)
         {
-            var uri = $"https://westus.api.cognitive.microsoft.com/luis/api/v2.0/apps/import?appName={appName}";
+            var uri = $"{_baseUrl}/apps/import?appName={appName}";
 
             HttpResponseMessage response;
             var byteData = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(model));
@@ -41,7 +47,7 @@ namespace Cake.Deploy.Bot.LUIS
 
         public async Task<bool> DeleteAppByIdAsync(string appId, CancellationToken ct)
         {
-            var uri = $"https://westus.api.cognitive.microsoft.com/luis/api/v2.0/apps/{appId}";
+            var uri = $"{_baseUrl}/apps/{appId}";
             var response = await _httpClient.DeleteAsync(uri, ct);
 
             return response.IsSuccessStatusCode;
@@ -64,7 +70,7 @@ namespace Cake.Deploy.Bot.LUIS
 
         public async Task<bool> TrainAppByIdAndVersionAsync(string appId, string versionId, CancellationToken ct)
         {
-            var uri = $"https://westus.api.cognitive.microsoft.com/luis/api/v2.0/apps/{appId}/versions/{versionId}/train";
+            var uri = $"{_baseUrl}/apps/{appId}/versions/{versionId}/train";
             HttpResponseMessage response;
             var byteData = Encoding.UTF8.GetBytes(string.Empty);
             using (var content = new ByteArrayContent(byteData))
@@ -83,12 +89,16 @@ namespace Cake.Deploy.Bot.LUIS
                     isTrained = true;
                     foreach (dynamic model in a)
                     {
-                        var status = model.details.dtatusId;
-                        if (status == 3)
+                        var status = model.details.status.ToString();
+                        if (status == "Fail")
                         {
                             throw new Exception(model.details.failureReason);
                         }
-                        else if (status == 2)
+                        else if (status == "Success")
+                        {
+                            continue;
+                        }
+                        else if (status == "InProgress")
                         {
                             isTrained = false;
                             break;
@@ -102,7 +112,7 @@ namespace Cake.Deploy.Bot.LUIS
 
         public async Task<bool> PublishAppVersion(string appId, string versionId, CancellationToken ct)
         {
-            var uri = $"https://westus.api.cognitive.microsoft.com/luis/api/v2.0/apps/{appId}/publish";
+            var uri = $"{_baseUrl}/apps/{appId}/publish";
 
             HttpResponseMessage response;
             var model = new { isStaging = false, versionId = versionId, region = string.Empty };
@@ -116,15 +126,15 @@ namespace Cake.Deploy.Bot.LUIS
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<string> GetAppEndpoints(string appId, string region, CancellationToken ct)
+        public async Task<string> GetAppEndpoints(string appId, CancellationToken ct)
         {
-            var uri = $"https://westus.api.cognitive.microsoft.com/luis/api/v2.0/apps/{appId}/endpoints";
+            var uri = $"{_baseUrl}/apps/{appId}/endpoints";
 
             var endpoints = JObject.Parse(await (await _httpClient.GetAsync(uri, ct)).Content.ReadAsStringAsync());
 
             foreach (var endpoint in endpoints)
             {
-                if (endpoint.Key == region)
+                if (endpoint.Key == _region)
                 {
                     return endpoint.Value.ToString();
                 }
@@ -134,7 +144,7 @@ namespace Cake.Deploy.Bot.LUIS
 
         private async Task<string> GetAppIdByNameAsync(string appName, CancellationToken ct)
         {
-            var uri = $"https://westus.api.cognitive.microsoft.com/luis/api/v2.0/apps/";
+            var uri = $"{_baseUrl}/apps/";
             var response = await _httpClient.GetAsync(uri, ct);
             var apps = await response.Content.ReadAsStringAsync();
             var array = JArray.Parse(apps);
