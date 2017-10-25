@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading;
 using Cake.Core;
 using Cake.Core.Annotations;
@@ -9,7 +10,8 @@ namespace Cake.Deploy.Bot.LUIS
     public static class CakeLuisExtension
     {
         [CakeMethodAlias]
-        public static string DeployLuisApp(this ICakeContext context, string subscriptionKey, string appName, string version, string pathToModel, string region = "westeurope")
+        [CakeNamespaceImport("Cake.Deploy.Bot.LUIS")]
+        public static LuisDetails DeployLuisApp(this ICakeContext context, string subscriptionKey, string appName, string version, string pathToModel, string region = "westeurope")
         {
             JObject model = JObject.Parse(File.ReadAllText(pathToModel));
             var luisManager = new LuisManager(subscriptionKey, region);
@@ -20,7 +22,12 @@ namespace Cake.Deploy.Bot.LUIS
             luisManager.PublishAppVersion(appId, version, CancellationToken.None).Wait();
             var endpoint = luisManager.GetAppEndpoints(appId, CancellationToken.None).Result;
 
-            return endpoint;
+            var luisDetails = new LuisDetails
+            {
+                AppId = appId,
+                Domain = new Uri(endpoint).Host
+            };
+            return luisDetails;
         }
     }
 }
