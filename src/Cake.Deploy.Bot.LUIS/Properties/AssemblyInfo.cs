@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Cake.Deploy.Bot.LUIS")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Cake addin for deploying LUIS app")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("ObjectivityLtd")]
 [assembly: AssemblyProduct("Cake.Deploy.Bot.LUIS")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyCopyright("Objectivity Bespoke Software Specialists, MIT license")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

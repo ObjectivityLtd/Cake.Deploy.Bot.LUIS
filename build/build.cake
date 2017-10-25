@@ -64,21 +64,14 @@ Task("NuGet")
     .Description("Create nuget package")
     .Does(()=>
 {
-    var packagePath = outputDir;
-
-    if(!DirectoryExists(packagePath))
-    {
-        CreateDirectory(packagePath);
-    }
-
-    var nuspecFile = sourceDir + "\\Cake.Deploy.Bot.LUIS\\Cake.Deploy.Bot.LUIS.csproj";
+    var projectFile = sourceDir + "\\Cake.Deploy.Bot.LUIS\\Cake.Deploy.Bot.LUIS.csproj";
 
     var nuGetPackSettings   = new NuGetPackSettings {
-        BasePath        = sourceDir + "\\bin\\Release\\",
-        OutputDirectory = packagePath
+        OutputDirectory = outputDir,
+        Properties = new Dictionary<string,string>{ {"Configuration", configuration} }
     };
 
-    NuGetPack(nuspecFile, nuGetPackSettings);
+    NuGetPack(projectFile, nuGetPackSettings);
 });
 
 ///////////////////////////////////////////////////////////////////////////////
