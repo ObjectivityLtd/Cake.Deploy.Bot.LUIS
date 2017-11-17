@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -28,6 +29,26 @@ namespace Cake.Deploy.Bot.LUIS
         public async Task<string> ImportAppAsync(JObject model, string appName, CancellationToken ct)
         {
             var uri = $"{_baseUrl}/apps/import?appName={appName}";
+
+            HttpResponseMessage response;
+            var byteData = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(model));
+            using (var content = new ByteArrayContent(byteData))
+            {
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                response = await _httpClient.PostAsync(uri, content, ct);
+            }
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+
+            var id = await response.Content.ReadAsStringAsync();
+            return id.Replace("\"", "");
+        }
+
+        public async Task<string> ImportAppVersionAsync(JObject model, string appId, string versionNumber, CancellationToken ct)
+        {
+            var uri = $"{_baseUrl}/apps/{appId}/versions/import?versionId={versionNumber}";
 
             HttpResponseMessage response;
             var byteData = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(model));
@@ -142,7 +163,7 @@ namespace Cake.Deploy.Bot.LUIS
             return string.Empty;
         }
 
-        private async Task<string> GetAppIdByNameAsync(string appName, CancellationToken ct)
+        public async Task<string> GetAppIdByNameAsync(string appName, CancellationToken ct)
         {
             var uri = $"{_baseUrl}/apps/";
             var response = await _httpClient.GetAsync(uri, ct);
@@ -159,6 +180,56 @@ namespace Cake.Deploy.Bot.LUIS
                 }
             }
             return string.Empty;
+        }
+
+        public async Task<string> CreateAppAsync(string appName, string description, string culture, string usageScenario, string domain, CancellationToken ct)
+        {
+            var uri = $"{_baseUrl}/apps/";
+
+            HttpResponseMessage response;
+            var model = new { name = appName, description = description, culture = culture, usageScenario = usageScenario, domain = domain, initialVersion = "0.1" };
+            var byteData = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(model));
+
+            using (var content = new ByteArrayContent(byteData))
+            {
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                response = _httpClient.PostAsync(uri, content, ct).Result;
+            }
+
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        public async Task<string> GetAppVersions(string appId, CancellationToken ct)
+        {
+            Version maxVersion = null;
+
+            var uri = $"{_baseUrl}/apps/{appId}/versions";
+
+            var response = await _httpClient.GetAsync(uri, ct);
+            var apps = await response.Content.ReadAsStringAsync();
+            var array = JArray.Parse(apps);
+
+            foreach (var app in array)
+            {
+                var appObject = app.Value<JObject>();
+
+                if (maxVersion == null)
+                {
+                    maxVersion = new Version(appObject.Property("version").Value.ToString());
+                }
+                else
+                {
+                    var currVersion = new Version(appObject.Property("version").Value.ToString());
+
+                    if (maxVersion.CompareTo(currVersion) < 0)
+                    {
+                        maxVersion = currVersion;
+                    }
+                }
+                
+            }
+            
+            return new Version(maxVersion.Major, maxVersion.Minor + 1).ToString();
         }
     }
 }
