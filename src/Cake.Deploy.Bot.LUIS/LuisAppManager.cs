@@ -55,6 +55,8 @@ namespace Cake.Deploy.Bot.LUIS
 
             this.WaitForTrained(id, appVersion);
 
+            this._apiCaller.PublishAppVersion(id, appVersion);
+
             return new Tuple<string, Version>(id, appVersion);
         }
 

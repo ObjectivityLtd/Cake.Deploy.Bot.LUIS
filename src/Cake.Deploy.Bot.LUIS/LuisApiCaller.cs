@@ -187,5 +187,20 @@ namespace Cake.Deploy.Bot.LUIS
             Queued,
             Success
         }
+
+        public void PublishAppVersion(string appId, Version version)
+        {
+            var url = this._apiUrlProvider.GetPublishApplicationUrl(appId);
+
+            var model = new { isStaging = false, versionId = version.ToString(), region = string.Empty };
+            var jObject = JObject.FromObject(model);
+
+            var response = this._httpClient.PostJObject(url, jObject, CancellationToken.None);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+        }
     }
 }

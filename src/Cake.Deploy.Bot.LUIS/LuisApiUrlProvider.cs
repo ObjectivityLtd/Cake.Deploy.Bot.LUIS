@@ -56,5 +56,10 @@ namespace Cake.Deploy.Bot.LUIS
         {
             return $"{this._baseApiUrl}/apps/{appId}/versions/{version}/train";
         }
+
+        public string GetPublishApplicationUrl(string appId)
+        {
+            return $"{this._baseApiUrl}/apps/{appId}/publish";
+        }
     }
 }
