@@ -26,7 +26,10 @@ namespace Cake.Deploy.Bot.LUIS
 
         public IEnumerable<Version> GetAppVersions(string appId)
         {
-            appId = appId ?? throw new ArgumentNullException(nameof(appId));
+            if (string.IsNullOrEmpty(appId))
+            {
+                throw new ArgumentNullException(nameof(appId));
+            }
 
             var url = this._apiUrlProvider.GetGetApplicationVersionsUrl(appId);
 
@@ -117,7 +120,10 @@ namespace Cake.Deploy.Bot.LUIS
 
         public Version GetAppMaxVersion(string appId)
         {
-            appId = appId ?? throw new ArgumentNullException(nameof(appId));
+            if (string.IsNullOrEmpty(appId))
+            {
+                throw new ArgumentNullException(nameof(appId));
+            }
 
             var versions = this.GetAppVersions(appId);
 
@@ -126,7 +132,10 @@ namespace Cake.Deploy.Bot.LUIS
 
         public string GetAppId(string appName)
         {
-            appName = appName ?? throw new ArgumentNullException(nameof(appName));
+            if (string.IsNullOrEmpty(appName))
+            {
+                throw new ArgumentNullException(nameof(appName));
+            }
 
             var apps = this.GetApps();
 
