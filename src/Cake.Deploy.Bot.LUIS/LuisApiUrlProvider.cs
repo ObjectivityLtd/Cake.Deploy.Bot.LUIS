@@ -12,12 +12,12 @@ namespace Cake.Deploy.Bot.LUIS
             switch (service)
             {
                 case Region.WestEurope:
-                    this._baseApiUrl = "https://westeurope.api.cognitive.microsoft.com/luis/api/v2.0";
-                    this._baseWebApiUrl = "https://westeurope.api.cognitive.microsoft.com/luis/webapi/v2.0";
+                    this._baseApiUrl = "https://westeurope.api.cognitive.microsoft.com/luis/api/v3.0";
+                    this._baseWebApiUrl = "https://westeurope.api.cognitive.microsoft.com/luis/webapi/v3.0";
                     break;
                 case Region.WestUs:
-                    this._baseApiUrl = "https://westus.api.cognitive.microsoft.com/luis/api/v2.0";
-                    this._baseWebApiUrl = "https://westus.api.cognitive.microsoft.com/luis/webapi/v2.0";
+                    this._baseApiUrl = "https://westus.api.cognitive.microsoft.com/luis/api/v3.0";
+                    this._baseWebApiUrl = "https://westus.api.cognitive.microsoft.com/luis/webapi/v3.0";
                     break;
             }
         }
