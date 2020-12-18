@@ -18,7 +18,7 @@ init:
 
 environment:
   NugetApiKey:
-    secure: wz8VOuRxEgPd7evPVcWYTqpW/tqigqdZpS9Stmhb2K2bXkOAHm07on4Hmy11EysF
+    secure: /daW5h2JvtbcjBlY3o0Ni7kt4P8nNFqhQDPV97oggoJGaPSmjr1lB2vsY+D/8PPm
   GithubAuthToken:
     secure: PkFAZB6f1lwOR9i3Mn9mR+kQBszikFVxmrhtOGK7p/xKlVF8o/htJc9LSQDSi3bN
 
